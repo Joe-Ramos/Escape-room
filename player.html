@@ -2,98 +2,365 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Escape Room</title>
+
+  <title>Bank Security System</title>
 
   <style>
+
     body {
-      background: #111;
-      color: white;
+      background: #0b0d0f;
+      color: #e8e8e8;
       font-family: Arial, sans-serif;
       text-align: center;
       margin: 0;
-      height: 100vh;
+      min-height: 100vh;
+
       display: flex;
       flex-direction: column;
       justify-content: center;
+      align-items: center;
+
+      transition: background 0.3s;
     }
 
-    h1 {
-      font-size: 45px;
-      margin: 0 0 30px 0;
+    .system {
+      width: 90%;
+      max-width: 900px;
+
+      border: 2px solid #555;
+
+      padding: 35px 20px;
+
+      box-sizing: border-box;
+
+      background: #15181b;
+
+      transition: border-color 0.3s;
+    }
+
+    .header {
+      font-size: 24px;
+      letter-spacing: 5px;
+      margin-bottom: 10px;
+    }
+
+    .status {
+      font-size: 14px;
+      letter-spacing: 3px;
+      margin-bottom: 30px;
     }
 
     #timer {
-      font-size: 120px;
+
+      font-family: monospace;
+
+      font-size:
+        clamp(80px, 18vw, 180px);
+
       font-weight: bold;
+
+      letter-spacing: 5px;
+
+      margin: 20px 0 40px 0;
+
+      transition: 0.3s;
     }
 
     #message {
-      font-size: 32px;
-      margin: 40px 20px 0 20px;
-      min-height: 50px;
+
+      font-size:
+        clamp(28px, 5vw, 55px);
+
+      font-weight: bold;
+
+      min-height: 70px;
+
+      padding: 20px;
+
+      box-sizing: border-box;
+
+      transition: 0.3s;
     }
+
+    .footer {
+
+      margin-top: 35px;
+
+      font-size: 12px;
+
+      letter-spacing: 2px;
+    }
+
+
+    /* WARNING STATES */
+
+    body.warning .system {
+      border-color: #888;
+    }
+
+
+    body.critical .system {
+      border-color: #fff;
+    }
+
+
+    body.critical #timer {
+
+      animation:
+        timerPulse 1s infinite;
+
+    }
+
+
+    @keyframes timerPulse {
+
+      0% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.45;
+      }
+
+      100% {
+        opacity: 1;
+      }
+
+    }
+
+
+    /* SECURITY ALERT */
+
+    #message.security-alert {
+
+      animation:
+        alertPulse 0.8s infinite;
+
+      font-size:
+        clamp(32px, 6vw, 65px);
+
+    }
+
+
+    @keyframes alertPulse {
+
+      0% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.4;
+      }
+
+      100% {
+        opacity: 1;
+      }
+
+    }
+
   </style>
 </head>
 
+
 <body>
 
-  <h1>ESCAPE ROOM</h1>
+  <div class="system">
 
-  <div id="timer">60:00</div>
+    <div class="header">
+      BANK SECURITY SYSTEM
+    </div>
 
-  <div id="message"></div>
+    <div class="status">
+      SECURE CONNECTION ESTABLISHED
+    </div>
+
+    <div id="timer">
+      60:00
+    </div>
+
+    <div id="message"></div>
+
+    <div class="footer">
+      AUTHORIZED PERSONNEL ONLY
+    </div>
+
+  </div>
+
 
   <script type="module">
 
     import { initializeApp }
+
       from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
+
     import {
+
       getDatabase,
+
       ref,
+
       onValue
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    }
+
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
 
     const firebaseConfig = {
-      apiKey: "AIzaSyCUyd2Dj6YyBs7pMbUgDQj2HTIyHxOfs90",
-      authDomain: "escape-room-33c9e.firebaseapp.com",
-      databaseURL: "https://escape-room-33c9e-default-rtdb.firebaseio.com",
-      projectId: "escape-room-33c9e",
-      storageBucket: "escape-room-33c9e.firebasestorage.app",
-      messagingSenderId: "337570398197",
-      appId: "1:337570398197:web:f9ef13388697f9b446aabc"
+
+      apiKey:
+        "AIzaSyCUyd2Dj6YyBs7pMbUgDQj2HTIyHxOfs90",
+
+      authDomain:
+        "escape-room-33c9e.firebaseapp.com",
+
+      databaseURL:
+        "https://escape-room-33c9e-default-rtdb.firebaseio.com",
+
+      projectId:
+        "escape-room-33c9e",
+
+      storageBucket:
+        "escape-room-33c9e.firebasestorage.app",
+
+      messagingSenderId:
+        "337570398197",
+
+      appId:
+        "1:337570398197:web:f9ef13388697f9b446aabc"
+
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
 
-    const gameRef = ref(db, "game");
-    const messageRef = ref(db, "message");
+    const app =
+      initializeApp(firebaseConfig);
 
-    // Update timer
+
+    const db =
+      getDatabase(app);
+
+
+    const gameRef =
+      ref(db, "game");
+
+
+    const messageRef =
+      ref(db, "message");
+
+
+    /*
+      TIMER
+    */
+
     onValue(gameRef, (snapshot) => {
 
-      const data = snapshot.val();
+      const data =
+        snapshot.val();
 
       if (!data) return;
 
-      const timeLeft = data.timeLeft ?? 3600;
 
-      const minutes = Math.floor(timeLeft / 60);
-      const seconds = timeLeft % 60;
+      const timeLeft =
+        data.timeLeft ?? 3600;
 
-      document.getElementById("timer").textContent =
-        String(minutes).padStart(2, "0") + ":" +
+
+      const minutes =
+        Math.floor(timeLeft / 60);
+
+
+      const seconds =
+        timeLeft % 60;
+
+
+      document.getElementById("timer")
+        .textContent =
+
+        String(minutes).padStart(2, "0") +
+
+        ":" +
+
         String(seconds).padStart(2, "0");
+
+
+      /*
+        WARNING LEVELS
+      */
+
+      document.body.classList.remove(
+        "warning",
+        "critical"
+      );
+
+
+      if (timeLeft <= 60) {
+
+        document.body.classList.add(
+          "critical"
+        );
+
+      }
+
+      else if (timeLeft <= 300) {
+
+        document.body.classList.add(
+          "critical"
+        );
+
+      }
+
+      else if (timeLeft <= 600) {
+
+        document.body.classList.add(
+          "warning"
+        );
+
+      }
 
     });
 
-    // Update message
+
+    /*
+      MESSAGES
+    */
+
     onValue(messageRef, (snapshot) => {
 
-      const message = snapshot.val() || "";
+      const message =
+        snapshot.val() || "";
 
-      document.getElementById("message").textContent = message;
+
+      const messageElement =
+        document.getElementById("message");
+
+
+      messageElement.textContent =
+        message;
+
+
+      /*
+        Make security alerts pulse
+      */
+
+      if (
+        message
+          .toUpperCase()
+          .includes("SECURITY ALERT")
+      ) {
+
+        messageElement.classList.add(
+          "security-alert"
+        );
+
+      }
+
+      else {
+
+        messageElement.classList.remove(
+          "security-alert"
+        );
+
+      }
 
     });
 
