@@ -2,14 +2,12 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Bank Security System</title>
 
   <style>
-
     body {
       background: #0b0d0f;
-      color: #e8e8e8;
+      color: white;
       font-family: Arial, sans-serif;
       text-align: center;
       margin: 0;
@@ -19,23 +17,15 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-
-      transition: background 0.3s;
     }
 
     .system {
       width: 90%;
       max-width: 900px;
-
-      border: 2px solid #555;
-
+      border: 3px solid #555;
       padding: 35px 20px;
-
       box-sizing: border-box;
-
       background: #15181b;
-
-      transition: border-color 0.3s;
     }
 
     .header {
@@ -51,99 +41,125 @@
     }
 
     #timer {
-
       font-family: monospace;
-
-      font-size:
-        clamp(80px, 18vw, 180px);
-
+      font-size: clamp(80px, 18vw, 180px);
       font-weight: bold;
-
       letter-spacing: 5px;
-
       margin: 20px 0 40px 0;
 
-      transition: 0.3s;
+      transition: transform 0.3s, text-shadow 0.3s;
     }
 
     #message {
-
-      font-size:
-        clamp(28px, 5vw, 55px);
-
+      font-size: clamp(28px, 5vw, 55px);
       font-weight: bold;
-
       min-height: 70px;
-
       padding: 20px;
-
       box-sizing: border-box;
-
-      transition: 0.3s;
     }
 
     .footer {
-
       margin-top: 35px;
-
       font-size: 12px;
-
       letter-spacing: 2px;
     }
 
-
-    /* WARNING STATES */
+    /* --------------------------------
+       10 MINUTE WARNING
+       -------------------------------- */
 
     body.warning .system {
-      border-color: #888;
+      border-width: 5px;
     }
 
-
-    body.critical .system {
-      border-color: #fff;
+    body.warning #timer {
+      transform: scale(1.08);
+      text-shadow: 0 0 15px white;
     }
 
+    /* --------------------------------
+       5 MINUTE WARNING
+       -------------------------------- */
 
-    body.critical #timer {
-
-      animation:
-        timerPulse 1s infinite;
-
+    body.danger #timer {
+      animation: slowPulse 2s infinite;
+      transform: scale(1.08);
     }
 
-
-    @keyframes timerPulse {
-
+    @keyframes slowPulse {
       0% {
         opacity: 1;
       }
 
       50% {
-        opacity: 0.45;
+        opacity: 0.55;
       }
 
       100% {
         opacity: 1;
       }
-
     }
 
+    /* --------------------------------
+       1 MINUTE WARNING
+       -------------------------------- */
 
-    /* SECURITY ALERT */
+    body.critical #timer {
+      animation: fastPulse 0.7s infinite;
+      transform: scale(1.1);
+    }
+
+    @keyframes fastPulse {
+      0% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.25;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    /* --------------------------------
+       SECURITY ALERT
+       -------------------------------- */
 
     #message.security-alert {
-
-      animation:
-        alertPulse 0.8s infinite;
-
-      font-size:
-        clamp(32px, 6vw, 65px);
-
+      animation: alertPulse 0.8s infinite;
     }
 
-
     @keyframes alertPulse {
+      0% {
+        opacity: 1;
+      }
 
+      50% {
+        opacity: 0.35;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    /* --------------------------------
+       TIME EXPIRED
+       -------------------------------- */
+
+    body.expired #timer {
+      display: none;
+    }
+
+    body.expired #message {
+      font-size: clamp(45px, 9vw, 100px);
+      min-height: 150px;
+      animation: expiredPulse 1s infinite;
+    }
+
+    @keyframes expiredPulse {
       0% {
         opacity: 1;
       }
@@ -155,12 +171,10 @@
       100% {
         opacity: 1;
       }
-
     }
 
   </style>
 </head>
-
 
 <body>
 
@@ -190,21 +204,13 @@
   <script type="module">
 
     import { initializeApp }
-
       from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-
     import {
-
       getDatabase,
-
       ref,
-
       onValue
-
-    }
-
-      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 
     const firebaseConfig = {
@@ -229,37 +235,23 @@
 
       appId:
         "1:337570398197:web:f9ef13388697f9b446aabc"
-
     };
 
 
-    const app =
-      initializeApp(firebaseConfig);
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const gameRef = ref(db, "game");
+    const messageRef = ref(db, "message");
 
 
-    const db =
-      getDatabase(app);
-
-
-    const gameRef =
-      ref(db, "game");
-
-
-    const messageRef =
-      ref(db, "message");
-
-
-    /*
-      TIMER
-    */
+    /* TIMER */
 
     onValue(gameRef, (snapshot) => {
 
-      const data =
-        snapshot.val();
+      const data = snapshot.val();
 
       if (!data) return;
-
 
       const timeLeft =
         data.timeLeft ?? 3600;
@@ -268,70 +260,83 @@
       const minutes =
         Math.floor(timeLeft / 60);
 
-
       const seconds =
         timeLeft % 60;
 
 
       document.getElementById("timer")
         .textContent =
-
-        String(minutes).padStart(2, "0") +
-
-        ":" +
-
-        String(seconds).padStart(2, "0");
+          String(minutes).padStart(2, "0") +
+          ":" +
+          String(seconds).padStart(2, "0");
 
 
       /*
-        WARNING LEVELS
+        Remove previous warning states
       */
 
       document.body.classList.remove(
         "warning",
-        "critical"
+        "danger",
+        "critical",
+        "expired"
       );
 
 
-      if (timeLeft <= 60) {
+      /*
+        Determine warning level
+      */
 
-        document.body.classList.add(
-          "critical"
-        );
+      if (timeLeft <= 0) {
+
+        document.body.classList.add("expired");
+
+        document.getElementById("message")
+          .textContent = "TIME EXPIRED";
+
+      }
+
+      else if (timeLeft <= 60) {
+
+        document.body.classList.add("critical");
 
       }
 
       else if (timeLeft <= 300) {
 
-        document.body.classList.add(
-          "critical"
-        );
+        document.body.classList.add("danger");
 
       }
 
       else if (timeLeft <= 600) {
 
-        document.body.classList.add(
-          "warning"
-        );
+        document.body.classList.add("warning");
 
       }
 
     });
 
 
-    /*
-      MESSAGES
-    */
+    /* MESSAGES */
 
     onValue(messageRef, (snapshot) => {
 
       const message =
         snapshot.val() || "";
 
-
       const messageElement =
         document.getElementById("message");
+
+
+      /*
+        Don't overwrite TIME EXPIRED
+      */
+
+      if (
+        document.body.classList.contains("expired")
+      ) {
+        return;
+      }
 
 
       messageElement.textContent =
@@ -339,7 +344,7 @@
 
 
       /*
-        Make security alerts pulse
+        Security alerts pulse
       */
 
       if (
