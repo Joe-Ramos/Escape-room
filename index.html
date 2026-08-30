@@ -137,6 +137,13 @@
 
     onValue(gameRef, (snapshot) => {
       const data = snapshot.val();
+      window.sendMessage = function() {
+  const message = document.getElementById("message").value;
+
+  set(ref(db, "message"), message);
+
+  document.getElementById("message").value = "";
+};
 
       if (!data) return;
 
