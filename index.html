@@ -1,235 +1,705 @@
 <!DOCTYPE html>
 <html>
 <head>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Escape Room - Game Master</title>
+
+  <title>Bank Heist - Game Master</title>
 
   <style>
-    body {
-      background: #111;
-      color: white;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 30px 15px;
+
+    * {
+      box-sizing: border-box;
     }
 
-    h1 {
-      font-size: 40px;
+    body {
+      margin: 0;
+      background: #101214;
+      color: #eeeeee;
+      font-family: Arial, sans-serif;
+    }
+
+    .header {
+      background: #191c20;
+      border-bottom: 2px solid #555;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .header-title {
+      font-size: 28px;
+      font-weight: bold;
+      letter-spacing: 3px;
+    }
+
+    .header-subtitle {
+      margin-top: 6px;
+      font-size: 13px;
+      letter-spacing: 2px;
+      color: #aaa;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: #191c20;
+      border: 1px solid #444;
+      border-radius: 10px;
+      padding: 20px;
       margin-bottom: 20px;
     }
 
-    #timer {
-      font-size: 90px;
+    .card-title {
+      font-size: 15px;
+      letter-spacing: 2px;
+      color: #aaa;
+      margin-bottom: 15px;
+    }
+
+    /* TIMER */
+
+    .timer {
+      text-align: center;
+      font-family: monospace;
+      font-size: clamp(70px, 15vw, 130px);
       font-weight: bold;
-      margin: 30px 0;
+      letter-spacing: 5px;
+      margin: 10px 0 20px;
+    }
+
+    .timer-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
     }
 
     button {
-      font-size: 22px;
-      padding: 15px 22px;
-      margin: 7px;
-      border-radius: 8px;
-      border: none;
+      background: #30343a;
+      color: white;
+      border: 1px solid #666;
+      border-radius: 7px;
+      padding: 14px 20px;
+      font-size: 18px;
+      cursor: pointer;
     }
 
-    .section {
-      margin: 20px 0;
+    button:active {
+      transform: scale(0.97);
+    }
+
+    .start {
+      font-weight: bold;
+    }
+
+    /* QUICK MESSAGES */
+
+    .quick-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .quick-buttons button {
+      flex: 1;
+      min-width: 150px;
+    }
+
+    /* CUSTOM MESSAGE */
+
+    .message-row {
+      display: flex;
+      gap: 10px;
     }
 
     #customMessage {
-      font-size: 20px;
-      padding: 12px;
-      width: 80%;
-      max-width: 500px;
+      flex: 1;
+      min-width: 0;
+      font-size: 18px;
+      padding: 14px;
+      border-radius: 7px;
+      border: 1px solid #666;
+      background: #0e1012;
+      color: white;
     }
+
+    /* MESSAGE HISTORY */
+
+    .history {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .history-item {
+      border-bottom: 1px solid #333;
+      padding: 10px 5px;
+    }
+
+    .history-time {
+      color: #888;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .history-message {
+      font-size: 16px;
+    }
+
+    .empty-history {
+      color: #777;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .clear-history {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
   </style>
+
 </head>
+
 
 <body>
 
-  <h1>GAME MASTER</h1>
 
-  <div id="timer">60:00</div>
+  <div class="header">
 
-  <div class="section">
-    <button onclick="startTimer()">▶ START</button>
-    <button onclick="pauseTimer()">⏸ PAUSE</button>
-    <button onclick="resetTimer()">🔄 RESET</button>
-  </div>
+    <div class="header-title">
+      BANK SECURITY SYSTEM
+    </div>
 
-  <div class="section">
-    <button onclick="sendMessage('💡 HINT AVAILABLE')">
-      💡 HINT
-    </button>
-
-    <button onclick="sendMessage('⚠️ SECURITY ALERT!')">
-      ⚠️ SECURITY ALERT
-    </button>
-
-    <button onclick="sendMessage('')">
-      CLEAR MESSAGE
-    </button>
-  </div>
-
-  <div class="section">
-
-    <input
-      id="customMessage"
-      type="text"
-      placeholder="Type a custom message"
-      onkeydown="if(event.key === 'Enter') sendCustomMessage()"
-    >
-
-    <br>
-
-    <button onclick="sendCustomMessage()">
-      SEND MESSAGE
-    </button>
+    <div class="header-subtitle">
+      GAME MASTER CONTROL PANEL
+    </div>
 
   </div>
 
-  <div class="section">
-    <button onclick="addTime(300)">+5 MIN</button>
-    <button onclick="addTime(-300)">−5 MIN</button>
+
+  <div class="container">
+
+
+    <!-- TIMER -->
+
+    <div class="card">
+
+      <div class="card-title">
+        GAME TIMER
+      </div>
+
+      <div id="timer" class="timer">
+        60:00
+      </div>
+
+      <div class="timer-buttons">
+
+        <button
+          class="start"
+          onclick="startTimer()">
+          ▶ START
+        </button>
+
+        <button
+          onclick="pauseTimer()">
+          ⏸ PAUSE
+        </button>
+
+        <button
+          onclick="resetTimer()">
+          ↻ RESET
+        </button>
+
+        <button
+          onclick="addTime(60)">
+          +1 MIN
+        </button>
+
+        <button
+          onclick="addTime(-60)">
+          −1 MIN
+        </button>
+
+        <button
+          onclick="addTime(300)">
+          +5 MIN
+        </button>
+
+        <button
+          onclick="addTime(-300)">
+          −5 MIN
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- QUICK MESSAGES -->
+
+    <div class="card">
+
+      <div class="card-title">
+        QUICK MESSAGES
+      </div>
+
+      <div class="quick-buttons">
+
+        <button
+          onclick="sendMessage('💡 HINT AVAILABLE')">
+          💡 HINT
+        </button>
+
+        <button
+          onclick="sendMessage('⚠️ SECURITY ALERT!')">
+          ⚠️ SECURITY ALERT
+        </button>
+
+        <button
+          onclick="sendMessage('📢 ATTENTION PLAYERS')">
+          📢 ATTENTION
+        </button>
+
+        <button
+          onclick="sendMessage('')">
+          CLEAR MESSAGE
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- CUSTOM MESSAGE -->
+
+    <div class="card">
+
+      <div class="card-title">
+        CUSTOM MESSAGE
+      </div>
+
+      <div class="message-row">
+
+        <input
+          id="customMessage"
+          type="text"
+          placeholder="Type a message to the players..."
+          onkeydown="handleEnter(event)"
+        >
+
+        <button
+          onclick="sendCustomMessage()">
+          SEND
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- MESSAGE HISTORY -->
+
+    <div class="card">
+
+      <div class="card-title">
+        MESSAGE HISTORY
+      </div>
+
+      <div id="history" class="history">
+
+        <div class="empty-history">
+          No messages yet.
+        </div>
+
+      </div>
+
+      <button
+        class="clear-history"
+        onclick="clearHistory()">
+        CLEAR HISTORY
+      </button>
+
+    </div>
+
+
   </div>
+
 
   <script type="module">
 
+
     import { initializeApp }
+
       from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
+
     import {
+
       getDatabase,
+
       ref,
+
       set,
-      onValue
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+      push,
+
+      onValue,
+
+      remove
+
+    }
+
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
 
     const firebaseConfig = {
-      apiKey: "AIzaSyCUyd2Dj6YyBs7pMbUgDQj2HTIyHxOfs90",
-      authDomain: "escape-room-33c9e.firebaseapp.com",
-      databaseURL: "https://escape-room-33c9e-default-rtdb.firebaseio.com",
-      projectId: "escape-room-33c9e",
-      storageBucket: "escape-room-33c9e.firebasestorage.app",
-      messagingSenderId: "337570398197",
-      appId: "1:337570398197:web:f9ef13388697f9b446aabc"
+
+      apiKey:
+        "AIzaSyCUyd2Dj6YyBs7pMbUgDQj2HTIyHxOfs90",
+
+      authDomain:
+        "escape-room-33c9e.firebaseapp.com",
+
+      databaseURL:
+        "https://escape-room-33c9e-default-rtdb.firebaseio.com",
+
+      projectId:
+        "escape-room-33c9e",
+
+      storageBucket:
+        "escape-room-33c9e.firebasestorage.app",
+
+      messagingSenderId:
+        "337570398197",
+
+      appId:
+        "1:337570398197:web:f9ef13388697f9b446aabc"
+
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
 
-    const gameRef = ref(db, "game");
-    const messageRef = ref(db, "message");
+    const app =
+      initializeApp(firebaseConfig);
+
+
+    const db =
+      getDatabase(app);
+
+
+    const gameRef =
+      ref(db, "game");
+
+
+    const messageRef =
+      ref(db, "message");
+
+
+    const historyRef =
+      ref(db, "messageHistory");
+
 
     let timeLeft = 3600;
+
     let timerRunning = false;
+
     let timer = null;
+
+
+    /* -------------------------
+       TIMER
+       ------------------------- */
+
 
     function updateDisplay() {
 
-      const minutes = Math.floor(timeLeft / 60);
-      const seconds = timeLeft % 60;
+      const minutes =
+        Math.floor(timeLeft / 60);
 
-      document.getElementById("timer").textContent =
-        String(minutes).padStart(2, "0") + ":" +
+      const seconds =
+        timeLeft % 60;
+
+
+      document.getElementById("timer")
+        .textContent =
+
+        String(minutes).padStart(2, "0") +
+
+        ":" +
+
         String(seconds).padStart(2, "0");
+
     }
+
 
     function saveGame() {
 
       set(gameRef, {
-        timeLeft: timeLeft,
-        running: timerRunning
+
+        timeLeft:
+          timeLeft,
+
+        running:
+          timerRunning
+
       });
+
     }
+
 
     window.startTimer = function() {
 
       if (timerRunning) return;
 
       timerRunning = true;
+
       saveGame();
+
 
       timer = setInterval(() => {
 
         if (timeLeft > 0) {
 
           timeLeft--;
+
           updateDisplay();
+
           saveGame();
 
-        } else {
+        }
+
+        else {
 
           pauseTimer();
 
         }
 
       }, 1000);
+
     };
+
 
     window.pauseTimer = function() {
 
       clearInterval(timer);
+
       timerRunning = false;
+
       saveGame();
+
     };
+
 
     window.resetTimer = function() {
 
       clearInterval(timer);
 
       timerRunning = false;
+
       timeLeft = 3600;
 
       updateDisplay();
+
       saveGame();
-    };
-
-    window.sendMessage = function(message) {
-
-      set(messageRef, message);
 
     };
 
-    window.sendCustomMessage = function() {
-
-      const input = document.getElementById("customMessage");
-      const message = input.value.trim();
-
-      if (message === "") return;
-
-      set(messageRef, message);
-
-      input.value = "";
-    };
 
     window.addTime = function(amount) {
 
       timeLeft += amount;
 
       if (timeLeft < 0) {
+
         timeLeft = 0;
+
       }
 
       updateDisplay();
+
       saveGame();
+
     };
+
+
+    /* -------------------------
+       MESSAGES
+       ------------------------- */
+
+
+    window.sendMessage = function(message) {
+
+      set(messageRef, message);
+
+      if (message !== "") {
+
+        const newMessage =
+          push(historyRef);
+
+        set(newMessage, {
+
+          message: message,
+
+          time: new Date().toLocaleTimeString(
+            [],
+            {
+              hour: "numeric",
+              minute: "2-digit",
+              second: "2-digit"
+            }
+          )
+
+        });
+
+      }
+
+    };
+
+
+    window.sendCustomMessage = function() {
+
+      const input =
+        document.getElementById(
+          "customMessage"
+        );
+
+
+      const message =
+        input.value.trim();
+
+
+      if (message === "") return;
+
+
+      sendMessage(message);
+
+      input.value = "";
+
+    };
+
+
+    window.handleEnter = function(event) {
+
+      if (event.key === "Enter") {
+
+        sendCustomMessage();
+
+      }
+
+    };
+
+
+    /* -------------------------
+       MESSAGE HISTORY
+       ------------------------- */
+
+
+    onValue(historyRef, (snapshot) => {
+
+      const history =
+        snapshot.val();
+
+      const container =
+        document.getElementById(
+          "history"
+        );
+
+
+      container.innerHTML = "";
+
+
+      if (!history) {
+
+        container.innerHTML =
+          '<div class="empty-history">No messages yet.</div>';
+
+        return;
+
+      }
+
+
+      const messages =
+        Object.values(history).reverse();
+
+
+      messages.forEach(item => {
+
+        const div =
+          document.createElement("div");
+
+        div.className =
+          "history-item";
+
+
+        div.innerHTML =
+
+          '<div class="history-time">' +
+          item.time +
+          '</div>' +
+
+          '<div class="history-message">' +
+          escapeHtml(item.message) +
+          '</div>';
+
+
+        container.appendChild(div);
+
+      });
+
+    });
+
+
+    window.clearHistory = function() {
+
+      remove(historyRef);
+
+    };
+
+
+    function escapeHtml(text) {
+
+      const div =
+        document.createElement("div");
+
+      div.textContent = text;
+
+      return div.innerHTML;
+
+    }
+
+
+    /* -------------------------
+       LOAD TIMER
+       ------------------------- */
+
 
     onValue(gameRef, (snapshot) => {
 
-      const data = snapshot.val();
+      const data =
+        snapshot.val();
+
 
       if (!data) return;
 
-      timeLeft = data.timeLeft ?? 3600;
-      timerRunning = data.running ?? false;
+
+      timeLeft =
+        data.timeLeft ?? 3600;
+
+
+      timerRunning =
+        data.running ?? false;
+
 
       updateDisplay();
 
     });
 
+
     updateDisplay();
+
 
   </script>
 
