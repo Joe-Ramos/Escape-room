@@ -11,12 +11,11 @@
       font-family: Arial, sans-serif;
       text-align: center;
       margin: 0;
-      padding: 40px 20px;
+      padding: 30px 15px;
     }
 
     h1 {
       font-size: 40px;
-      margin-bottom: 30px;
     }
 
     #timer {
@@ -26,12 +25,11 @@
     }
 
     button {
-      font-size: 24px;
-      padding: 15px 30px;
-      margin: 10px;
+      font-size: 22px;
+      padding: 15px 25px;
+      margin: 8px;
       border-radius: 8px;
       border: none;
-      cursor: pointer;
     }
   </style>
 </head>
@@ -46,49 +44,97 @@
   <button onclick="pauseTimer()">PAUSE</button>
   <button onclick="resetTimer()">RESET</button>
 
-  <script>
-    let timeLeft = 60 * 60;
+  <script type="module">
+
+    import { initializeApp }
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+    import {
+      getDatabase,
+      ref,
+      set,
+      onValue
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCUyd2Dj6YyBs7pMbUgDQj2HTIyHxOfs90",
+      authDomain: "escape-room-33c9e.firebaseapp.com",
+      databaseURL: "https://escape-room-33c9e-default-rtdb.firebaseio.com",
+      projectId: "escape-room-33c9e",
+      storageBucket: "escape-room-33c9e.firebasestorage.app",
+      messagingSenderId: "337570398197",
+      appId: "1:337570398197:web:f9ef13388697f9b446aabc"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const gameRef = ref(db, "game");
+
+    let timeLeft = 3600;
     let timerRunning = false;
     let timer;
 
     function updateDisplay() {
-      let minutes = Math.floor(timeLeft / 60);
-      let seconds = timeLeft % 60;
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
 
       document.getElementById("timer").textContent =
         String(minutes).padStart(2, "0") + ":" +
         String(seconds).padStart(2, "0");
     }
 
-    function startTimer() {
+    function saveGame() {
+      set(gameRef, {
+        timeLeft: timeLeft,
+        running: timerRunning
+      });
+    }
+
+    window.startTimer = function() {
       if (timerRunning) return;
 
       timerRunning = true;
+      saveGame();
 
-      timer = setInterval(function() {
+      timer = setInterval(() => {
         if (timeLeft > 0) {
           timeLeft--;
           updateDisplay();
+          saveGame();
         } else {
-          clearInterval(timer);
-          timerRunning = false;
+          pauseTimer();
         }
       }, 1000);
-    }
+    };
 
-    function pauseTimer() {
+    window.pauseTimer = function() {
       clearInterval(timer);
       timerRunning = false;
-    }
+      saveGame();
+    };
 
-    function resetTimer() {
+    window.resetTimer = function() {
       clearInterval(timer);
       timerRunning = false;
-      timeLeft = 60 * 60;
+      timeLeft = 3600;
       updateDisplay();
-    }
+      saveGame();
+    };
+
+    onValue(gameRef, (snapshot) => {
+      const data = snapshot.val();
+
+      if (!data) return;
+
+      timeLeft = data.timeLeft ?? 3600;
+      timerRunning = data.running ?? false;
+
+      updateDisplay();
+    });
 
     updateDisplay();
+
   </script>
 
 </body>
