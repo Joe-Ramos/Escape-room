@@ -46,12 +46,19 @@
 
 <br><br>
 
-<input
-  id="message"
-  type="text"
-  placeholder="Message to players"
-  style="font-size:20px; padding:12px; width:80%; max-width:500px;"
->
+<div>
+  <button onclick="sendMessage('HINT AVAILABLE')">💡 HINT</button>
+  <button onclick="sendMessage('SECURITY ALERT!')">⚠️ SECURITY ALERT</button>
+</div>
+
+<div>
+  <button onclick="addTime(300)">+5 MIN</button>
+  <button onclick="addTime(-300)">−5 MIN</button>
+</div>
+
+<div>
+  <button onclick="sendMessage('')">CLEAR MESSAGE</button>
+</div>
 
 <br>
 
@@ -137,7 +144,21 @@
 
     onValue(gameRef, (snapshot) => {
       const data = snapshot.val();
-      window.sendMessage = function() {
+
+      window.sendMessage = function(message) {
+  set(ref(db, "message"), message);
+};
+
+window.addTime = function(amount) {
+  timeLeft += amount;
+
+  if (timeLeft < 0) {
+    timeLeft = 0;
+  }
+
+  updateDisplay();
+  saveGame();
+};
   const message = document.getElementById("message").value;
 
   set(ref(db, "message"), message);
