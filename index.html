@@ -36,6 +36,13 @@
     .section {
       margin: 20px 0;
     }
+
+    #customMessage {
+      font-size: 20px;
+      padding: 12px;
+      width: 80%;
+      max-width: 500px;
+    }
   </style>
 </head>
 
@@ -63,6 +70,23 @@
     <button onclick="sendMessage('')">
       CLEAR MESSAGE
     </button>
+  </div>
+
+  <div class="section">
+
+    <input
+      id="customMessage"
+      type="text"
+      placeholder="Type a custom message"
+      onkeydown="if(event.key === 'Enter') sendCustomMessage()"
+    >
+
+    <br>
+
+    <button onclick="sendCustomMessage()">
+      SEND MESSAGE
+    </button>
+
   </div>
 
   <div class="section">
@@ -166,6 +190,18 @@
 
       set(messageRef, message);
 
+    };
+
+    window.sendCustomMessage = function() {
+
+      const input = document.getElementById("customMessage");
+      const message = input.value.trim();
+
+      if (message === "") return;
+
+      set(messageRef, message);
+
+      input.value = "";
     };
 
     window.addTime = function(amount) {
