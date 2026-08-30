@@ -1,92 +1,281 @@
 <!DOCTYPE html>
 <html>
 <head>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Bank Security System</title>
 
   <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      background: #0b0d0f;
-      color: white;
-      font-family: Arial, sans-serif;
-      text-align: center;
       margin: 0;
       min-height: 100vh;
 
+      background:
+        radial-gradient(circle at center, #18201d 0%, #080a0b 70%);
+
+      color: #d8ddd9;
+      font-family: Arial, sans-serif;
+
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
+
+      overflow: hidden;
     }
 
-    .system {
-      width: 90%;
-      max-width: 900px;
-      border: 3px solid #555;
-      padding: 35px 20px;
-      box-sizing: border-box;
-      background: #15181b;
+    /* MAIN TERMINAL */
+
+    .terminal {
+      width: 94%;
+      max-width: 1100px;
+      min-height: 90vh;
+
+      padding: 18px;
+
+      background: #101416;
+
+      border: 3px solid #394047;
+      border-radius: 14px;
+
+      box-shadow:
+        0 0 0 5px #090b0c,
+        0 0 40px rgba(0,0,0,0.9);
+
+      position: relative;
     }
+
+    .screen {
+      min-height: calc(90vh - 36px);
+
+      border: 2px solid #252d31;
+
+      background:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255,255,255,0.015),
+          rgba(255,255,255,0.015) 1px,
+          transparent 1px,
+          transparent 4px
+        ),
+        #0b1112;
+
+      display: flex;
+      flex-direction: column;
+
+      padding: 25px;
+    }
+
+    /* HEADER */
 
     .header {
-      font-size: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      border-bottom: 1px solid #293235;
+
+      padding-bottom: 18px;
+    }
+
+    .bank-title {
+      font-size: clamp(22px, 4vw, 40px);
       letter-spacing: 5px;
-      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .bank-subtitle {
+      margin-top: 8px;
+
+      color: #6fbb75;
+
+      font-size: clamp(10px, 2vw, 16px);
+      letter-spacing: 4px;
     }
 
     .status {
-      font-size: 14px;
+      border: 1px solid #405146;
+
+      padding: 12px 18px;
+
+      text-align: center;
+
+      color: #82d889;
+
+      font-size: 12px;
       letter-spacing: 3px;
-      margin-bottom: 30px;
+    }
+
+    .status-dot {
+      display: inline-block;
+
+      width: 10px;
+      height: 10px;
+
+      border-radius: 50%;
+
+      background: #79d57f;
+
+      margin-left: 8px;
+    }
+
+    /* TIMER */
+
+    .timer-section {
+      margin-top: 25px;
+
+      text-align: center;
+    }
+
+    .timer-label {
+      color: #b7beb9;
+
+      font-size: 15px;
+      letter-spacing: 6px;
+
+      margin-bottom: 12px;
     }
 
     #timer {
       font-family: monospace;
-      font-size: clamp(80px, 18vw, 180px);
-      font-weight: bold;
-      letter-spacing: 5px;
-      margin: 20px 0 40px 0;
 
-      transition: transform 0.3s, text-shadow 0.3s;
+      font-size: clamp(75px, 17vw, 190px);
+
+      font-weight: bold;
+
+      letter-spacing: 5px;
+
+      color: #a4ff8c;
+
+      text-shadow:
+        0 0 8px #76e96d,
+        0 0 25px rgba(100,255,100,0.4);
+
+      background: #050908;
+
+      border: 2px solid #26352b;
+
+      padding: 15px 10px;
+
+      box-shadow:
+        inset 0 0 30px rgba(60,120,60,0.15);
+
+      transition: all 0.3s;
+    }
+
+    /* MESSAGE */
+
+    .message-section {
+      margin-top: 25px;
+
+      flex: 1;
+
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message-label {
+      text-align: center;
+
+      color: #d85c4d;
+
+      font-size: 15px;
+
+      letter-spacing: 6px;
+
+      margin-bottom: 10px;
     }
 
     #message {
-      font-size: clamp(28px, 5vw, 55px);
-      font-weight: bold;
-      min-height: 70px;
+      flex: 1;
+
+      min-height: 110px;
+
+      display: flex;
+
+      justify-content: center;
+      align-items: center;
+
+      text-align: center;
+
       padding: 20px;
-      box-sizing: border-box;
+
+      border: 2px solid #5b2824;
+
+      background: #0d0808;
+
+      color: #eeeeee;
+
+      font-size: clamp(25px, 5vw, 55px);
+
+      font-weight: bold;
+
+      text-shadow: 0 0 8px rgba(255,255,255,0.25);
     }
+
+    /* FOOTER */
 
     .footer {
-      margin-top: 35px;
-      font-size: 12px;
-      letter-spacing: 2px;
+      margin-top: 20px;
+
+      padding-top: 15px;
+
+      border-top: 1px solid #293235;
+
+      text-align: center;
     }
 
-    /* --------------------------------
-       10 MINUTE WARNING
-       -------------------------------- */
+    .authorized {
+      font-size: 15px;
 
-    body.warning .system {
-      border-width: 5px;
+      letter-spacing: 5px;
     }
+
+    .clearance {
+      margin-top: 7px;
+
+      color: #62ad68;
+
+      font-size: 11px;
+
+      letter-spacing: 3px;
+    }
+
+    /* 10 MINUTE WARNING */
 
     body.warning #timer {
-      transform: scale(1.08);
-      text-shadow: 0 0 15px white;
+      color: #fff27c;
+
+      text-shadow:
+        0 0 10px #ffe96a,
+        0 0 30px rgba(255,220,70,0.5);
+
+      border-color: #6b642d;
+
+      transform: scale(1.03);
     }
 
-    /* --------------------------------
-       5 MINUTE WARNING
-       -------------------------------- */
+    /* 5 MINUTE WARNING */
 
     body.danger #timer {
+      color: #ffbf62;
+
+      text-shadow:
+        0 0 10px #ffad38,
+        0 0 30px rgba(255,150,40,0.5);
+
+      border-color: #72502d;
+
       animation: slowPulse 2s infinite;
-      transform: scale(1.08);
     }
 
     @keyframes slowPulse {
+
       0% {
         opacity: 1;
       }
@@ -98,18 +287,25 @@
       100% {
         opacity: 1;
       }
+
     }
 
-    /* --------------------------------
-       1 MINUTE WARNING
-       -------------------------------- */
+    /* 1 MINUTE */
 
     body.critical #timer {
+      color: #ff6b5e;
+
+      text-shadow:
+        0 0 10px #ff493c,
+        0 0 30px rgba(255,50,40,0.6);
+
+      border-color: #8a302a;
+
       animation: fastPulse 0.7s infinite;
-      transform: scale(1.1);
     }
 
     @keyframes fastPulse {
+
       0% {
         opacity: 1;
       }
@@ -121,17 +317,24 @@
       100% {
         opacity: 1;
       }
+
     }
 
-    /* --------------------------------
-       SECURITY ALERT
-       -------------------------------- */
+    /* SECURITY ALERT */
 
     #message.security-alert {
+      color: #ff7165;
+
+      border-color: #b3382e;
+
+      box-shadow:
+        inset 0 0 30px rgba(255,50,40,0.15);
+
       animation: alertPulse 0.8s infinite;
     }
 
     @keyframes alertPulse {
+
       0% {
         opacity: 1;
       }
@@ -143,59 +346,132 @@
       100% {
         opacity: 1;
       }
+
     }
 
-    /* --------------------------------
-       TIME EXPIRED
-       -------------------------------- */
+    /* TIME EXPIRED */
 
     body.expired #timer {
       display: none;
     }
 
+    body.expired .timer-label {
+      display: none;
+    }
+
     body.expired #message {
-      font-size: clamp(45px, 9vw, 100px);
-      min-height: 150px;
+      min-height: 300px;
+
+      font-size: clamp(45px, 10vw, 110px);
+
+      color: #ff4b3e;
+
+      border-color: #9b3029;
+
       animation: expiredPulse 1s infinite;
     }
 
     @keyframes expiredPulse {
+
       0% {
         opacity: 1;
       }
 
       50% {
-        opacity: 0.4;
+        opacity: 0.35;
       }
 
       100% {
         opacity: 1;
       }
+
     }
 
   </style>
+
 </head>
+
 
 <body>
 
-  <div class="system">
+  <div class="terminal">
 
-    <div class="header">
-      BANK SECURITY SYSTEM
-    </div>
+    <div class="screen">
 
-    <div class="status">
-      SECURE CONNECTION ESTABLISHED
-    </div>
 
-    <div id="timer">
-      60:00
-    </div>
+      <!-- HEADER -->
 
-    <div id="message"></div>
+      <div class="header">
 
-    <div class="footer">
-      AUTHORIZED PERSONNEL ONLY
+        <div>
+
+          <div class="bank-title">
+            BANK SECURITY SYSTEM
+          </div>
+
+          <div class="bank-subtitle">
+            SECURE CONNECTION ESTABLISHED
+          </div>
+
+        </div>
+
+
+        <div class="status">
+
+          SYSTEM STATUS<br>
+
+          NORMAL
+
+          <span class="status-dot"></span>
+
+        </div>
+
+      </div>
+
+
+      <!-- TIMER -->
+
+      <div class="timer-section">
+
+        <div class="timer-label">
+          TIME REMAINING
+        </div>
+
+        <div id="timer">
+          60:00
+        </div>
+
+      </div>
+
+
+      <!-- MESSAGE -->
+
+      <div class="message-section">
+
+        <div class="message-label">
+          SYSTEM MESSAGE
+        </div>
+
+        <div id="message"></div>
+
+      </div>
+
+
+      <!-- FOOTER -->
+
+      <div class="footer">
+
+        <div class="authorized">
+          AUTHORIZED PERSONNEL ONLY
+        </div>
+
+        <div class="clearance">
+          ACCESS LEVEL: SECURITY CLEARANCE REQUIRED
+        </div>
+
+      </div>
+
+
     </div>
 
   </div>
@@ -203,14 +479,23 @@
 
   <script type="module">
 
+
     import { initializeApp }
+
       from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
+
     import {
+
       getDatabase,
+
       ref,
+
       onValue
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    }
+
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 
     const firebaseConfig = {
@@ -235,23 +520,33 @@
 
       appId:
         "1:337570398197:web:f9ef13388697f9b446aabc"
+
     };
 
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    const app =
+      initializeApp(firebaseConfig);
 
-    const gameRef = ref(db, "game");
-    const messageRef = ref(db, "message");
+    const db =
+      getDatabase(app);
+
+
+    const gameRef =
+      ref(db, "game");
+
+    const messageRef =
+      ref(db, "message");
 
 
     /* TIMER */
 
     onValue(gameRef, (snapshot) => {
 
-      const data = snapshot.val();
+      const data =
+        snapshot.val();
 
       if (!data) return;
+
 
       const timeLeft =
         data.timeLeft ?? 3600;
@@ -266,14 +561,13 @@
 
       document.getElementById("timer")
         .textContent =
-          String(minutes).padStart(2, "0") +
-          ":" +
-          String(seconds).padStart(2, "0");
 
+        String(minutes).padStart(2, "0") +
 
-      /*
-        Remove previous warning states
-      */
+        ":" +
+
+        String(seconds).padStart(2, "0");
+
 
       document.body.classList.remove(
         "warning",
@@ -282,10 +576,6 @@
         "expired"
       );
 
-
-      /*
-        Determine warning level
-      */
 
       if (timeLeft <= 0) {
 
@@ -328,10 +618,6 @@
         document.getElementById("message");
 
 
-      /*
-        Don't overwrite TIME EXPIRED
-      */
-
       if (
         document.body.classList.contains("expired")
       ) {
@@ -342,10 +628,6 @@
       messageElement.textContent =
         message;
 
-
-      /*
-        Security alerts pulse
-      */
 
       if (
         message
@@ -368,6 +650,7 @@
       }
 
     });
+
 
   </script>
 
